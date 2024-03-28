@@ -1,37 +1,59 @@
 const AppError = require("../utils/appError");
 const catchAsync = require("../utils/catchAsync");
 const User = require("./../models/userModel");
-
-exports.getAllUsers = (req, res) => {
-  res.status(500).json({
-    status: "error",
-    message: "This route is not yet defined!",
+// get all users
+exports.getAllUser = catchAsync(async (req, res, next) => {
+  const users = await User.find();
+  res.status(200).json({
+    status: "success",
+    results: users.length,
+    data: {
+      users,
+    },
   });
-};
-exports.getUser = (req, res) => {
-  res.status(500).json({
-    status: "error",
-    message: "This route is not yet defined!",
+});
+// get one user
+exports.getUser = catchAsync(async (req, res) => {
+  const user = await User.findById(req.params.id);
+  if (!user) {
+    return next(new AppError("No User found with Id", 400));
+  }
+  res.status(200).json({
+    status: "success",
+    data: {
+      user,
+    },
   });
+});
+exports.createUser = async (req, res) => {
+  res.send("User Created");
 };
-exports.createUser = (req, res) => {
-  res.status(500).json({
-    status: "error",
-    message: "This route is not yet defined!",
+exports.updateUser = catchAsync(async (req, res) => {
+  const user = await User.findByIdAndUpdate(req.params.id, req.body, {
+    new: true,
+    runValidators: true,
   });
-};
-exports.updateUser = (req, res) => {
-  res.status(500).json({
-    status: "error",
-    message: "This route is not yet defined!",
+  if (!user) {
+    return next(new AppError("No user found with ID", 400));
+  }
+  res.status(200).json({
+    status: "Success",
   });
-};
-exports.deleteUser = (req, res) => {
-  res.status(500).json({
-    status: "error",
-    message: "This route is not yet defined!",
+});
+exports.deleteUser = catchAsync(async (req, res) => {
+  const user = await User.findByIdAndDelete(req.params.id, req.body, {
+    new: true,
+    runValidators: true,
   });
-};
+  if (!user) {
+    return next(new AppError("No user found with ID", 400));
+  }
+  res.status(204).json({
+    status: "Success",
+    data: null,
+    message: "User Deleted",
+  });
+});
 // allowed fields is to restrict what the user can update
 const filterObj = (obj, ...allowedFields) => {
   const newObj = {};
