@@ -14,6 +14,10 @@ const xss = require("xss-clean");
 const hpp = require("hpp"); //express middleware to protect against http parameter pollution attacks
 const cookieParser = require("cookie-parser");
 const cors = require("cors");
+// swagger
+const swaggerUi=require('swagger-ui-express')
+const yaml=require("yamljs")
+const swaggerDocument=YAML.load('./swagger.yaml')
 
 const app = express();
 app.use(bodyParser.json());
@@ -40,13 +44,14 @@ app.use(hpp());
 
 // Routes
 app.get("/", (req, res) => {
-  res.send("<h1>welcome to article api</h1>");
+  res.send("<h1>Wiki Api</h1><<a href='/api-docs'Documentation</a>");
 });
 
 // if you have html file
 // app.get("/", (req, res) => {
 //   res.sendFile(__dirname + "/index.html")
 // })
+app.use('/api-docs',swaggerUi.serve,swaggerUi.setup(swaggerDocument))
 app.use("/api/v1/wiki", wikiRouter);
 app.use("/api/v1/user", userRouter);
 
